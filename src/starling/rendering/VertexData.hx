@@ -449,6 +449,23 @@ class VertexData
         _rawData.writeFloat(x);
         _rawData.writeFloat(y);
     }
+	
+	/**
+	   Writes the given coordinates to the specified attribute of all vertices.
+	   @param	attrName
+	   @param	x
+	   @param	y
+	**/
+	public function setPointAll(attrName:String, x:Float, y:Float):Void
+	{
+		var offset:Int = attrName == "position" ? _posOffset : getAttribute(attrName).offset;
+		for (vertexID in 0..._numVertices)
+		{
+			_rawData.position = vertexID * _vertexSize + offset;
+			_rawData.writeFloat(x);
+			_rawData.writeFloat(y);
+		}
+	}
 
     /** Reads a Vector3D from the specified vertex and attribute.
      *  The 'w' property of the Vector3D is ignored. */
