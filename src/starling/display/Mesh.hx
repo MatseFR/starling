@@ -253,12 +253,12 @@ class Mesh extends DisplayObject
 
     /** The vertex data describing all vertices of the mesh.
      *  Any change requires a call to <code>setRequiresRedraw</code>. */
-    private var vertexData(get, never):VertexData;
+    public var vertexData(get, never):VertexData;
     private function get_vertexData():VertexData { return __vertexData; }
 
     /** The index data describing how the vertices are interconnected.
      *  Any change requires a call to <code>setRequiresRedraw</code>. */
-    private var indexData(get, never):IndexData;
+    public var indexData(get, never):IndexData;
     private function get_indexData():IndexData { return __indexData; }
 
     /** The style that is used to render the mesh. Styles (which are always subclasses of
