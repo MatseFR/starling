@@ -204,6 +204,18 @@ class VertexData
         clone._tinted = _tinted;
         return clone;
     }
+	
+	/**
+	 * 
+	 * @param	clone
+	 */
+	public function cloneTo(clone:VertexData):Void
+	{
+		clone._rawData.writeBytes(_rawData);
+        clone._numVertices = _numVertices;
+        clone._premultipliedAlpha = _premultipliedAlpha;
+        clone._tinted = _tinted;
+	}
 
     /** Copies the vertex data (or a range of it, defined by 'vertexID' and 'numVertices')
      *  of this instance to another vertex data object, starting at a certain target index.
