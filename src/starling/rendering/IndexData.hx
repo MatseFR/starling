@@ -142,6 +142,21 @@ class IndexData
         clone._numIndices = _numIndices;
         return clone;
     }
+	
+	/**
+	 * 
+	 * @param	clone
+	 */
+	public function cloneTo(clone:IndexData):Void
+	{
+		if (!_useQuadLayout)
+        {
+            clone.switchToGenericData();
+            clone._rawData.writeBytes(_rawData);
+        }
+
+        clone._numIndices = _numIndices;
+	}
 
     /** Copies the index data (or a range of it, defined by 'indexID' and 'numIndices')
      *  of this instance to another IndexData object, starting at a certain target index.
