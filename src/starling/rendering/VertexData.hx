@@ -533,6 +533,27 @@ class VertexData
         _rawData.writeFloat(z);
         _rawData.writeFloat(w);
     }
+	
+	/**
+	   
+	   @param	attrName
+	   @param	x
+	   @param	y
+	   @param	z
+	   @param	w
+	**/
+	public function setPoint4DAll(attrName:String, x:Float, y:Float, z:Float, w:Float = 1.0):Void
+	{
+		var offset:Int = attrName == "position" ? _posOffset : getAttribute(attrName).offset;
+		for (vertexID in 0..._numVertices)
+		{
+			_rawData.position = vertexID * _vertexSize + offset;
+			_rawData.writeFloat(x);
+			_rawData.writeFloat(y);
+			_rawData.writeFloat(z);
+			_rawData.writeFloat(w);
+		}
+	}
 
     /** Reads an RGB color from the specified vertex and attribute (no alpha). */
     public function getColor(vertexID:Int, attrName:String="color"):UInt
