@@ -419,6 +419,17 @@ class VertexData
         _rawData.position = vertexID * _vertexSize + getAttribute(attrName).offset;
         _rawData.writeUnsignedInt(value);
     }
+	
+	/** Writes an unsigned integer value to the specified attribute of all vertices */
+	public function setUnsignedIntAll(attrName:String, value:UInt):Void
+	{
+		var offset:Int = getAttribute(attrName).offset;
+		for (i in 0..._numVertices)
+		{
+			_rawData.position = vertexID * _vertexSize + offset;
+			_rawData.writeUnsignedInt(value);
+		}
+	}
 
     /** Reads a float value from the specified vertex and attribute. */
     public function getFloat(vertexID:Int, attrName:String):Float
@@ -436,6 +447,17 @@ class VertexData
         _rawData.position = vertexID * _vertexSize + getAttribute(attrName).offset;
         _rawData.writeFloat(value);
     }
+	
+	/** Writes a float to the specified attribute of all vertices. */
+	public function setFloatAll(attrName:String, value:Float):Void
+	{
+		var offset:Int = getAttribute(attrName).offset;
+		for (i in 0..._numVertices)
+		{
+			_rawData.position = vertexID * _vertexSize + offset;
+			_rawData.writeFloat(value);
+		}
+	}
 
     /** Reads a Point from the specified vertex and attribute. */
     public function getPoint(vertexID:Int, attrName:String, out:Point=null):Point
@@ -462,12 +484,7 @@ class VertexData
         _rawData.writeFloat(y);
     }
 	
-	/**
-	   Writes the given coordinates to the specified attribute of all vertices.
-	   @param	attrName
-	   @param	x
-	   @param	y
-	**/
+	/** Writes the given coordinates to the specified attribute of all vertices. */
 	public function setPointAll(attrName:String, x:Float, y:Float):Void
 	{
 		var offset:Int = attrName == "position" ? _posOffset : getAttribute(attrName).offset;
@@ -505,13 +522,7 @@ class VertexData
         _rawData.writeFloat(z);
     }
 	
-	/**
-	   
-	   @param	attrName
-	   @param	x
-	   @param	y
-	   @param	z
-	**/
+	/** Writes the given coordinates to the specified attribute of all vertices. */
 	public function setPoint3DAll(attrName:String, x:Float, y:Float, z:Float):Void
 	{
 		var offset:Int = getAttribute(attrName).offset;
@@ -553,14 +564,7 @@ class VertexData
         _rawData.writeFloat(w);
     }
 	
-	/**
-	   
-	   @param	attrName
-	   @param	x
-	   @param	y
-	   @param	z
-	   @param	w
-	**/
+	/** Writes the given coordinates to the specified attribute of all vertices. */
 	public function setPoint4DAll(attrName:String, x:Float, y:Float, z:Float, w:Float = 1.0):Void
 	{
 		var offset:Int = getAttribute(attrName).offset;
