@@ -424,7 +424,7 @@ class VertexData
 	public function setUnsignedIntAll(attrName:String, value:UInt):Void
 	{
 		var offset:Int = getAttribute(attrName).offset;
-		for (i in 0..._numVertices)
+		for (vertexID in 0..._numVertices)
 		{
 			_rawData.position = vertexID * _vertexSize + offset;
 			_rawData.writeUnsignedInt(value);
@@ -452,7 +452,7 @@ class VertexData
 	public function setFloatAll(attrName:String, value:Float):Void
 	{
 		var offset:Int = getAttribute(attrName).offset;
-		for (i in 0..._numVertices)
+		for (vertexID in 0..._numVertices)
 		{
 			_rawData.position = vertexID * _vertexSize + offset;
 			_rawData.writeFloat(value);
