@@ -504,6 +504,25 @@ class VertexData
         _rawData.writeFloat(y);
         _rawData.writeFloat(z);
     }
+	
+	/**
+	   
+	   @param	attrName
+	   @param	x
+	   @param	y
+	   @param	z
+	**/
+	public function setPoint3DAll(attrName:String, x:Float, y:Float, z:Float):Void
+	{
+		var offset:Int = getAttribute(attrName).offset;
+		for (vertexID in 0...numVertices)
+		{
+			_rawData.position = vertexID * _vertexSize + offset;
+			_rawData.writeFloat(x);
+			_rawData.writeFloat(y);
+			_rawData.writeFloat(z);
+		}
+	}
 
     /** Reads a Vector3D from the specified vertex and attribute, including the fourth
      *  coordinate ('w'). */
@@ -544,7 +563,7 @@ class VertexData
 	**/
 	public function setPoint4DAll(attrName:String, x:Float, y:Float, z:Float, w:Float = 1.0):Void
 	{
-		var offset:Int = attrName == "position" ? _posOffset : getAttribute(attrName).offset;
+		var offset:Int = getAttribute(attrName).offset;
 		for (vertexID in 0..._numVertices)
 		{
 			_rawData.position = vertexID * _vertexSize + offset;
