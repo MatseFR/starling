@@ -201,6 +201,71 @@ class MeshBatch extends Mesh
 
         __indexSyncRequired = __vertexSyncRequired = true;
     }
+	
+	/**
+	   Adds an Array of meshes to the batch
+	   
+	   @param	meshes
+	   @param	matrix
+	   @param	alpha
+	   @param	subset
+	   @param	ignoreTransformations
+	**/
+	public function addMeshArray(meshes:Array<Mesh>, matrix:Matrix=null, alpha:Float=1.0,
+								subset:MeshSubset=null, ignoreTransformations:Bool=false):Void
+	{
+		addMeshArrayAt(meshes, -1, -1, matrix, alpha, subset, ignoreTransformations);
+	}
+	
+	/**
+	   Adds an Array of meshes to the batch at the specified indexID and vertexID
+	   
+	   @param	meshes
+	   @param	indexID
+	   @param	vertexID
+	   @param	matrix
+	   @param	alpha
+	   @param	subset
+	   @param	ignoreTransformations
+	**/
+	public function addMeshArrayAt(meshes:Array<Mesh>, indexID:Int=-1, vertexID:Int=-1,
+								matrix:Matrix=null, alpha:Float=1.0,
+								subset:MeshSubset=null, ignoreTransformations:Bool=false):Void
+	{
+		var useMeshMatrix:Bool = false;
+		
+		if (ignoreTransformations) matrix = null;
+        else if (matrix == null) useMeshMatrix = true;
+        if (subset == null) subset = sFullMeshSubset;
+        
+        var oldNumVertices:Int = __vertexData.numVertices;
+        var targetVertexID:Int = vertexID >= 0 ? vertexID : oldNumVertices;
+        var targetIndexID:Int = indexID >= 0 ? indexID : __indexData.numIndices;
+
+        if (oldNumVertices == 0)
+            __setupFor(meshes[0]);
+		
+		for (mesh in meshes)
+		{
+			if (useMeshMatrix)
+			{
+				mesh.__style.batchVertexData(__style, targetVertexID, mesh.transformationMatrix, subset.vertexID, subset.numVertices);
+			}
+			else
+			{
+				mesh.__style.batchVertexData(__style, targetVertexID, matrix, subset.vertexID, subset.numVertices);
+			}
+			mesh.__style.batchIndexData(__style, targetIndexID, targetVertexID - subset.vertexID, subset.indexID, subset.numIndices);
+			
+			targetVertexID += mesh.numVertices;
+			targetIndexID += mesh.numIndices;
+		}
+		
+		if (alpha != 1.0) __vertexData.scaleAlphas("color", alpha, targetVertexID, subset.numVertices);
+        if (__parent != null) setRequiresRedraw();
+
+        __indexSyncRequired = __vertexSyncRequired = true;
+	}
 
     private function __setupFor(mesh:Mesh):Void
     {
