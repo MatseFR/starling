@@ -307,7 +307,7 @@ class AssetManager extends EventDispatcher
             }
             else
             {
-                log("Ignoring unsupported asset type: " + Type.getClassName(asset));
+                log("Ignoring unsupported asset type: " + openfl.Lib.getQualifiedClassName(asset));
             }
         }
     }
@@ -475,7 +475,7 @@ class AssetManager extends EventDispatcher
                 if (postProcessors.length > 0)
                 {
                     try { postProcessors.shift().execute(self); }
-                    catch (e:Error) { Execute.execute(onError, [e.message]); }
+                    catch (e:Dynamic) { Execute.execute(onError, [e.message]); }
 
                     Timer.delay(runPostProcessors, 1);
                 }
