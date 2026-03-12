@@ -27,16 +27,23 @@ import starling.styles.MeshStyle;
 import starling.textures.Texture;
 import starling.utils.RenderUtil;
 
-/** Provides a way to batch up to 4 different textures in one draw call, at the cost of more complex custom Fragment Shaders
- *  To use this, set Mesh.defaultStyle to MultiTextureStyle (ideally before Starling is initialised!)
- **/
+/**
+   Provides a way to batch up to 5 (baseline profiles) or 16 different textures in one draw call, at the cost of more complex custom Fragment Shaders
+   To use this, set Mesh.defaultStyle to MultiTextureStyle (ideally before Starling is initialised!)
+**/
 class MultiTextureStyle extends MeshStyle 
 {
 	/** The vertex format expected by this style. */
 	public static var VERTEX_FORMAT:VertexDataFormat =
 		MeshStyle.VERTEX_FORMAT.extend("texture:float1");
 	
-	/** Maximum number of textures that can be batched. */
+	/**
+	   Maximum number of textures that can be batched.
+	   Default value is 5 (which is the absolute max with baseline profile)
+	   until <code>MultiTextureStyle.init()</code> has been called with Starling started
+	   You can call it manually if you want/need, otherwise it will be called by the
+	   first MultiTextureStyle instance created.
+	**/
 	public static var MAX_NUM_TEXTURES(get, never):Int;
 	
 	private static var __MAX_NUM_TEXTURES:Int = 5;
@@ -48,13 +55,27 @@ class MultiTextureStyle extends MeshStyle
 	private static var sMaxTextures:Int = 2;
 	private static var sTextureIndexMap:Array<Int> = new Array<Int>();
 	
+	/**
+	   Maximum number of textures to be batched, default 2.
+	**/
 	public static var maxTextures(get, set):Int;
 	private static function get_maxTextures():Int { return sMaxTextures; }
 	private static function set_maxTextures(value:Int):Int
 	{
 		if (!__initDone) init();
-		value = value < 1 ? 1 : value;
-		sMaxTextures = value > __MAX_NUM_TEXTURES ? __MAX_NUM_TEXTURES : value;
+		
+		if (!__initDone)
+		{
+			// we don't know the profile yet, allow a max value of 16 (absolute max on non-baseline profile)
+			// that number might be reduced when we can finally check profile
+			value = value < 1 ? 1 : value > 16 ? 16 : value;
+			sMaxTextures = value;
+		}
+		else
+		{
+			value = value < 1 ? 1 : value;
+			sMaxTextures = value > __MAX_NUM_TEXTURES ? __MAX_NUM_TEXTURES : value;
+		}
 		return value;
 	}
 	
@@ -64,6 +85,7 @@ class MultiTextureStyle extends MeshStyle
 	public static function init():Void
 	{
 		if (__initDone) return;
+		if (Starling.current == null) return;
 		
 		var isBaseline:Bool = Starling.current.profile == Context3DProfile.BASELINE ||
 							  Starling.current.profile == Context3DProfile.BASELINE_CONSTRAINED ||
@@ -144,10 +166,6 @@ class MultiTextureStyle extends MeshStyle
 								numSharedTextures ++;
 						}
 						return numTexturesHere + numTexturesToAdd - numSharedTextures <= sMaxTextures;
-						//if (numTexturesHere + numTexturesToAdd - numSharedTextures >= sMaxTextures)
-						//{
-							//trace("oh");
-						//}
 					}
 					return true;
 				}
@@ -233,7 +251,7 @@ class MultiTextureStyle extends MeshStyle
 	// in the list.
 	private function getTextureIndex(texture:Texture):Int
 	{
-		if (_texture.root == texture) return 0;
+		if (_textureRoot == texture) return 0;
 		var length:Int = __textures.length;
 		for (i in 0...length)
 			if (__textures[i] == texture) return i + 1;
@@ -243,7 +261,7 @@ class MultiTextureStyle extends MeshStyle
 	// Returns an element of the shared texture list.
 	inline private function getTexture(index:Int):Texture
 	{
-		return index > 0 ? __textures[index - 1] : _texture.root;
+		return index > 0 ? __textures[index - 1] : _textureRoot;
 	}
 	
 	public var numTextures(get, never):Int;
@@ -441,7 +459,7 @@ class MultiTextureEffect extends MeshEffect
 			}
 			vertexFormat.setVertexBufferAt(3, vertexBuffer, "texture");
 			context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT,
-				0, _multiTexturingConstants, Math.ceil((length + 1) / 4));
+				0, _multiTexturingConstants, __isBaseline ? 2 : Math.ceil((length + 1) / 4));
 		}
 	}
 	
